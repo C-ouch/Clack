@@ -38,13 +38,13 @@ public ClackClient(String userName){
     this(userName,"localhost",7000);
 
 }
-/**
-public ClackClient set anonymous() {
-    /**anonymous
 
+    /**
+     * for Annoymous used not finished yet
+     */
+    public ClackClient () {
 
 }
- */
 
 public void start(){
 
@@ -72,9 +72,11 @@ public int hashCode(){
 return (int) userName.hashCode();
 }
 public  boolean equals(){
+
     return equals();
 }
 public  String toString(){
+
     return toString();
 }
 }
