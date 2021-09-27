@@ -4,6 +4,7 @@ import data.MessageClackData;
 public class ClackServer{
 
 
+
     private int port;
     private boolean closeConnection;
     private ClackData dataToReceiveFromClient;
@@ -38,7 +39,7 @@ public class ClackServer{
         return port;
     }
     public int hashCode(){
-        return port * 5;
+        return port ;
     }
     public boolean equals(Object other){
         ClackServer otherClient =(ClackServer) other;
