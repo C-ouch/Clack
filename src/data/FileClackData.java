@@ -1,8 +1,13 @@
 package data;
-
 import java.io.File;
+/**
+ *This class is a child class of ClackData.
+ * It consists of the name and contents of a file.
+ *
+ * @author Evan Couchman
+ */
 
-public class FileClackData {
+public class FileClackData extends ClackData {
     private String fileName;
     private String fileContents;
 
@@ -10,9 +15,7 @@ public class FileClackData {
 
     }
 
-    public FileClackData() {
-
-    }
+    public FileClackData() { this.fileName = getFileName();    }
 
     public void setFileName(String fileName) {
 
@@ -25,7 +28,7 @@ public class FileClackData {
 
     public File getData()
     {
-        return null ;
+        return null;
     }
 
     public void readFileContent(){

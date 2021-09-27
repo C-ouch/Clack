@@ -1,6 +1,12 @@
 package data;
+/**
+ *This class is a child class of ClackData.
+ * It consists of the name and contents of a file.
+ *
+ * @author Evan Couchman
+ */
 
-public class MessageClackData {
+public class MessageClackData extends ClackData {
     private String message;
 
     public MessageClackData(String userName, String message, int type)
