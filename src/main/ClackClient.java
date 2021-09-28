@@ -34,9 +34,16 @@ public ClackClient(String userName ,String hostNme,int port){
     }
 
 }
-/** construcor to creat where the user name, host name are given port is set to 700*/
-public ClackClient(String userName ,String hostNme){
-    this(userName, hostNme,7000);
+// Constructiors
+/**
+ * This Circle construtor initializes the ClackClient User names ,host name and the port number
+ *
+ * @param hostName Hostname for the client
+ * @param userName User Name for the Client
+ * @param port      port set as 7000
+ * */
+public ClackClient(String userName ,String hostName){
+    this(userName, hostName,7000);
 
 }
 public ClackClient(String userName){
@@ -63,6 +70,11 @@ public void receiveData(){
 
 }
     /** construcor for print data*/
+    /**
+     *
+     * @return Data from the Client.
+     */
+
 public String printData(){
     return printData();
 }
