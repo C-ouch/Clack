@@ -3,7 +3,7 @@ import data.ClackData;
 
 /**
  * @author Elek Ye and Evan Couchman
- * A class that represents the client user 
+ * A class that represents the client user
  */
 public class TestClackServer{
 
@@ -48,16 +48,16 @@ public class TestClackServer{
     public int getPort(){
         return port;
     }
-    @override
+    @Override
     public int hashCode(){
         return port;
     }
-    @override
+    @Override
     public boolean equals(Object other){
        test.TestClackServer otherClient =(test.TestClackServer) other;
         return this.port == otherClient.port;
     }
-    @override
+    @Override
     public String toString(){
         return toString();
     }
