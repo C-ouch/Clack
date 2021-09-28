@@ -48,16 +48,16 @@ public class ClackServer{
     public int getPort(){
         return port;
     }
-    @override
+    @Override
     public int hashCode(){
         return port ;
     }
-    @override
+    @Override
     public boolean equals(Object other){
         ClackServer otherClient =(ClackServer) other;
         return this.port == otherClient.port;
     }
-    @override
+    @Override
     public String toString(){
         return toString();
     }

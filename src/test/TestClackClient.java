@@ -95,16 +95,16 @@ public class TestClackClient {
     public int getPort(){
         return port;
     }
-    @override
+    @Override
     public int hashCode(){
         return (int) userName.hashCode();
     }
-    @override
+    @Override
     public  boolean equals(){
 
         return equals();
     }
-    @override
+    @Override
     public  String toString(){
 
         return toString();
