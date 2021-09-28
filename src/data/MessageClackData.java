@@ -3,11 +3,13 @@ package data;
  *This class is a child class of ClackData.
  * It consists of the name and contents of a file.
  *
- * @author Evan Couchman
+ * @author Elek Ye and Evan Couchman
  */
 
 public class MessageClackData extends ClackData {
     private String message;
+
+    //CONSTRUCTORS
 
     public MessageClackData(String userName, String message, int type)
     {
@@ -17,10 +19,10 @@ public class MessageClackData extends ClackData {
     public MessageClackData()
     {}
 
-    //FUNCTIONS
-    public void getData()
+    //METHODS
+    public String getData()
     {
-
+        return message;
     }
 
     //should be correctly overridden
@@ -38,6 +40,7 @@ public class MessageClackData extends ClackData {
     should be overridden to return a full description of the class with all instance
     variables, including those in super class
      */
+    @Override
     public String toString()
     {
         return "";

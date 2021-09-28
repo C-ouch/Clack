@@ -4,12 +4,14 @@ import java.io.File;
  *This class is a child class of ClackData.
  * It consists of the name and contents of a file.
  *
- * @author Evan Couchman
+ * @author Elek Ye and Evan Couchman
  */
 
 public class FileClackData extends ClackData {
     private String fileName;
     private String fileContents;
+
+    //Constructors
 
     public FileClackData(String userName, String fileName, int type) {
 
@@ -17,8 +19,12 @@ public class FileClackData extends ClackData {
 
     public FileClackData() { this.fileName = getFileName();    }
 
-    public void setFileName(String fileName) {
 
+    //METHODS
+
+    public void setFileName(String fName)
+    {
+        this.fileName = fName;
     }
 
     public String getFileName() {
@@ -26,7 +32,7 @@ public class FileClackData extends ClackData {
         return fileName;
     }
 
-    public File getData()
+    public String getData()
     {
         return null;
     }
@@ -53,6 +59,7 @@ public class FileClackData extends ClackData {
     should be overridden to return a full description of the class with all instance
     variables, including those in super class
      */
+    @Override
     public String toString()
     {
         return "";
