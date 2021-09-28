@@ -13,11 +13,11 @@ public class FileClackData extends ClackData {
 
     //Constructors
 
-    /**
+    /**Calls super constructor and sets up file name
      *
-     * @param userName
-     * @param fileName
-     * @param type
+     * @param userName -name of client user
+     * @param fileName - name of the file
+     * @param type -  the kind of data exchanged between the client and the server
      */
     public FileClackData(String userName, String fileName, int type)
     {
@@ -33,25 +33,43 @@ public class FileClackData extends ClackData {
 
     //METHODS
 
+    /**
+     *
+     * @param fName sets the filename
+     */
     public void setFileName(String fName)
     {
         this.fileName = fName;
     }
 
+    /**
+     *
+     * @return the name of the file
+     */
     public String getFileName() {
 
         return fileName;
     }
 
+    /**
+     *
+     * @return null
+     */
     public String getData()
     {
         return null;
     }
 
+    /**
+     *
+     */
     public void readFileContent(){
 
     }
 
+    /**
+     *
+     */
     public void writeFileContents(){
 
     }

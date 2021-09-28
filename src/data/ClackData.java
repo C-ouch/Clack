@@ -12,22 +12,22 @@ import java.util.Date;
 
 public abstract class ClackData
 {
-    protected String userName;                    //private or public?
-    protected int type;                           //private or public?
-    protected Date date;                          //private or public?
+    protected String userName;
+    protected int type;
+    protected Date date;
 
     //type variable's constant values:
-    final static public int CONSTANT_LISTUSERS = 0;
-    final static public int CONSTANT_LOGOUT = 1;
-    final static public int CONSTANT_SENDMESSAGE = 2;
-    final static public int CONSTANT_SENDFILE = 3;
+    final static public int CONSTANT_LISTUSERS = 0;     /** Give a listing of all users connected to this session */
+    final static public int CONSTANT_LOGOUT = 1;        /** Close this client's connection */
+    final static public int CONSTANT_SENDMESSAGE = 2;   /** Send a message */
+    final static public int CONSTANT_SENDFILE = 3;      /** Send a file */
 
 
     //CONSTRUCTORS
     /** constructor to set up userName and type, date should be created automatically here
      *
-     * @param userName
-     * @param type
+     * @param userName - name of client user
+     * @param type - the kind of data exchanged between the client and the server
      */
     public ClackData(String userName, int type)
     {
@@ -37,9 +37,9 @@ public abstract class ClackData
 
     }
 
-    /**constructor to create anonymous user, whose name should be “Anon”, should call another constructor
+    /**constructor to create anonymous user, whose name should be "Anon"
      *
-     * @param type
+     * @param type -  the kind of data exchanged between the client and the server
      */
     public ClackData(int type)
     {
@@ -76,7 +76,7 @@ public abstract class ClackData
 
     /**
      *
-     * @return
+     * @return the date at which object was created
      */
     public Date getDate()
     {
