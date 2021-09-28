@@ -11,21 +11,36 @@ public class MessageClackData extends ClackData {
 
     //CONSTRUCTORS
 
+    /**
+     *
+     * @param userName
+     * @param message
+     * @param type
+     */
     public MessageClackData(String userName, String message, int type)
     {
-
+        super(userName, type);
+        this.message = message;
     }
 
+    /**
+     * default
+     */
     public MessageClackData()
-    {}
+    {this("Anon", null,0);}
 
     //METHODS
+
+    /**
+     *
+     * @return
+     */
     public String getData()
     {
         return message;
     }
 
-    //should be correctly overridden
+
     @Override
     public int hashCode(){
         return 0;
@@ -43,6 +58,7 @@ public class MessageClackData extends ClackData {
     @Override
     public String toString()
     {
+
         return "";
     }
 

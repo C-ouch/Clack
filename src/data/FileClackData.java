@@ -13,11 +13,22 @@ public class FileClackData extends ClackData {
 
     //Constructors
 
-    public FileClackData(String userName, String fileName, int type) {
-
+    /**
+     *
+     * @param userName
+     * @param fileName
+     * @param type
+     */
+    public FileClackData(String userName, String fileName, int type)
+    {
+        super(userName, type);
+        this.fileName = fileName;
     }
 
-    public FileClackData() { this.fileName = getFileName();    }
+    /**
+     * default constructor
+     */
+    public FileClackData() { this("Anon", null,0);    }
 
 
     //METHODS
