@@ -3,7 +3,7 @@ package main;
 import data.ClackData;
 
 /**
- * @author Elek Ye and Evan Couchman
+ * @author  Elek Ye and Evan Couchman
  * A class that represents the client user
  */
 public class ClackClient {

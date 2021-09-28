@@ -1,5 +1,10 @@
 package test;
 
+/**
+ * @author Elek Ye and Evan Couchman
+ * A class that represents the client user
+ */
+
 public class TestClackData {
         private String userName;                    //private or public?
         private int type;                           //private or public?

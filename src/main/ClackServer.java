@@ -3,6 +3,10 @@ import data.ClackData;
 import data.MessageClackData;
 public class ClackServer{
 
+    /**
+     * @author Elek Ye and Evan Couchman
+     * A class that represents the client user
+     */
 
     /** integer representing port number on server*/
     private int port;
