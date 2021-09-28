@@ -54,8 +54,7 @@ public class ClackServer{
     }
     @Override
     public boolean equals(Object other){
-        ClackServer otherClient =(ClackServer) other;
-        return this.port == otherClient.port;
+        return true;
     }
     @Override
     public String toString(){
