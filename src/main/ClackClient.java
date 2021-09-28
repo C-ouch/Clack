@@ -40,7 +40,7 @@ public ClackClient(String userName ,String hostNme,int port){
  *
  * @param hostName Hostname for the client
  * @param userName User Name for the Client
- * @param port      port set as 7000
+ * port set as 7000
  * */
 public ClackClient(String userName ,String hostName){
     this(userName, hostName,7000);
@@ -95,9 +95,9 @@ public int hashCode(){
 return (int) userName.hashCode();
 }
   @Override
-public  boolean equals(){
+public  boolean equals(Object other){
 
-    return equals();
+    return true;
 }
 @Override
 public  String toString(){
