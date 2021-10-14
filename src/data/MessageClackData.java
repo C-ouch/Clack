@@ -11,11 +11,11 @@ public class MessageClackData extends ClackData {
 
     //CONSTRUCTORS
 
-    /**
+    /**Calls the super constructor and sets up message
      *
-     * @param userName
-     * @param message
-     * @param type
+     * @param userName - name of client user
+     * @param message - instant message
+     * @param type -  the kind of data exchanged between the client and the server
      */
     public MessageClackData(String userName, String message, int type)
     {
@@ -33,7 +33,7 @@ public class MessageClackData extends ClackData {
 
     /**
      *
-     * @return
+     * @return the instant message
      */
     public String getData()
     {
