@@ -1,107 +1,216 @@
 package main;
 
+import java.io.IOException;
+import java.util.Scanner;
+
 import data.ClackData;
+import data.FileClackData;
+import data.MessageClackData;
 
 /**
- * @author  Elek Ye and Evan Couchman
- * A class that represents the client user
+ * The ClackClient represent the client user.
+ * 
+ * @author Elek Ye and Evan Couchman
  */
 public class ClackClient {
-    /** String of name of the client*/
-    private String userName;
-    /** String of name of the coputer using the server*/
-    private String hostName;
-    /** interget  of port number on server connect to*/
-    private int port;
-    /** boolean representing whether connection is close or not*/
-    private boolean closeConnection;
-    /** private data send or receive from server*/
-    private ClackData dataToSendToServer;
-    private ClackData dataToReceiveFromServer;
-/** constructor to creat User name , host name and port are given*/
-public ClackClient(String userName ,String hostNme,int port){
-    if(userName ==null || hostName ==null || port <7000){
-        System.out.println("Input for username ,hostname,and port is invalid");
+	/** String of name of the client */
+	private String userName;
+	/** String of name of the computer using the server */
+	private String hostName;
+	/** integer of port number on server connect to */
+	private int port;
+	/** boolean representing whether connection is close or not */
+	private boolean closeConnection;
+	/** private data send to server */
+	private ClackData dataToSendToServer;
+	/** private data receive from server */
+	private ClackData dataToReceiveFromServer;
+	
+	/** used to input from stdin */
+	private Scanner inFromStd;
 
+	/**
+	 * constructor to create User name, host name and port are given
+	 * 
+	 * @param userName User Name for the Client
+	 * @param hostName Hostname for the client
+	 * @param port     port for the client
+	 */
+	public ClackClient(String userName, String hostName, int port) {
+		if (userName == null) {
+			throw new IllegalArgumentException("userName should not be null!");
+		}
 
-    }else{
-        this.userName = userName;
-        this.hostName = hostNme;
-        this.port = port;
-        closeConnection = false;
-        dataToReceiveFromServer =null;
-        dataToSendToServer = null;
-    }
+		if (hostName == null) {
+			throw new IllegalArgumentException("hostName should not be null!");
+		}
 
-}
-// Constructiors
-/**
- * This Circle construtor initializes the ClackClient User names ,host name and the port number
- *
- * @param hostName Hostname for the client
- * @param userName User Name for the Client
- * port set as 7000
- * */
-public ClackClient(String userName ,String hostName){
-    this(userName, hostName,7000);
+		if (port < 1024) {
+			throw new IllegalArgumentException("port should not b less than 1024!");
+		}
 
-}
-public ClackClient(String userName){
-    this(userName,"localhost",7000);
+		this.userName = userName;
+		this.hostName = hostName;
+		this.port = port;
+		closeConnection = false;
+		dataToReceiveFromServer = null;
+		dataToSendToServer = null;
 
-}
+	}
 
-    /**
-     * for Annoymous used not finished yet
-     */
-    public ClackClient () {
+	/**
+	 * This Circle constructor initializes the ClackClient User names ,host name and
+	 * the port number
+	 *
+	 * @param hostName Hostname for the client
+	 * @param userName User Name for the Client port set as 7000
+	 */
+	public ClackClient(String userName, String hostName) {
+		this(userName, hostName, 7000);
 
-}
-/** construcor for start*/
-public void start(){
+	}
 
-}
-    /** construcor for sendData*/
-public void sendData(){
+	/**
+	 * constructor that sets host name to be "localhost"
+	 * 
+	 * @param userName the specified username
+	 */
+	public ClackClient(String userName) {
+		this(userName, "localhost", 7000);
 
-}
-    /** construcor for receivedata*/
-public void receiveData(){
+	}
 
-}
-    /** construcor for print data*/
-    /**
-     *
-     * @return Data from the Client.
-     */
+	/**
+	 * default constructor that sets anonymous user
+	 */
+	public ClackClient() {
+		this("anonymous", "localhost", 7000);
+	}
 
-public String printData(){
-    return printData();
-}
-    /** construcor for get username*/
-public String getUserName(){
-    return userName;
-}
-    /** construcor for gethost name*/
-public String getHostName(){
-    return hostName;
-}
-    /** construcor for get port*/
-public int getPort(){
-    return port;
-}
-   @Override
-public int hashCode(){
-return (int) userName.hashCode();
-}
-  @Override
-public  boolean equals(Object other){
+	/** method to start a connection */
+	public void start() {
+		inFromStd = new Scanner(System.in);
+	}
 
-    return true;
-}
-@Override
-public  String toString(){
+	/**
+	 * reads the data from the client
+	 */
+	public void readClientData() {
+		if (inFromStd == null || closeConnection) {
+			return;
+		}
 
-    return toString();
-}
+		System.out.print("command>");
+		String lineString = inFromStd.nextLine();
+		if (lineString == null) {
+			closeConnection = true;
+			return;
+		}
+
+		lineString = lineString.strip();
+
+		String[] arguments = lineString.split("\s+");
+
+		if ("DONE".equals(arguments[0])) {
+			closeConnection = true;
+			return;
+		}
+
+		if ("SENDFILE".equals(arguments[0])) {
+			/* the command is SENDFILE filename */
+			if (arguments.length != 2) {
+				System.err.println("SENDFILE: lack argument");
+				return;
+			}
+
+			String filename = arguments[1];
+			FileClackData fileClackData = new FileClackData(this.userName, filename, ClackData.CONSTANT_SENDFILE);
+			try {
+				fileClackData.readFileContent();
+				dataToSendToServer = fileClackData;
+			} catch (IOException e) {
+				System.err.println("read failed on file " + filename);
+
+				dataToSendToServer = null;
+			}
+			return;
+		}
+
+		if ("LISTUSERS".equals(arguments[0])) {
+			// do nothing now
+			return;
+		}
+
+		// initialize dataToSendToServer as a MessageClackData
+		MessageClackData messageClackData = new MessageClackData(this.userName, lineString,
+				ClackData.CONSTANT_SENDMESSAGE);
+		dataToSendToServer = messageClackData;
+	}
+
+	/**
+	 * sends data to server
+	 */
+	public void sendData() {
+
+	}
+
+	/**
+	 * receives data from the server
+	 */
+	public void receiveData() {
+
+	}
+
+	/**
+	 * prints the received data to standard output
+	 */
+	public void printData() {
+		/* use dataToSendToServer as dataToReceiveFromServer in project2 */
+		dataToReceiveFromServer = dataToSendToServer;
+		if (dataToReceiveFromServer == null) {
+			return;
+		}
+
+		if (dataToReceiveFromServer.getUserName().equals(this.userName)) {
+			System.out.println(dataToReceiveFromServer.getData());
+		}
+	}
+
+	/**
+	 * 
+	 * @return the username
+	 */
+	public String getUserName() {
+		return userName;
+	}
+
+	/**
+	 * @return the hostname
+	 */
+	public String getHostName() {
+		return hostName;
+	}
+
+	/**
+	 * @return the port
+	 */
+	public int getPort() {
+		return port;
+	}
+
+	@Override
+	public int hashCode() {
+		return (int) userName.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object other) {
+
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "username:" + userName + ", hostname:" + hostName + ", port:" + port;
+	}
 }

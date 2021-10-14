@@ -37,7 +37,7 @@ public abstract class ClackData
 
     }
 
-    /**constructor to create anonymous user, whose name should be “Anon”, should call another constructor
+    /**constructor to create anonymous user
      *
      * @param type
      */

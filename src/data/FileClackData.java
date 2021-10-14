@@ -1,5 +1,7 @@
 package data;
 import java.io.File;
+import java.io.IOException;
+
 /**
  *This class is a child class of ClackData.
  * It consists of the name and contents of a file.
@@ -48,11 +50,11 @@ public class FileClackData extends ClackData {
         return null;
     }
 
-    public void readFileContent(){
-
+    public void readFileContent() throws IOException {
+    	
     }
 
-    public void writeFileContents(){
+    public void writeFileContents() throws IOException {
 
     }
 
