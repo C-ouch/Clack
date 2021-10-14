@@ -107,7 +107,7 @@ public class ClackClient {
 			return;
 		}
 
-		lineString = lineString.strip();
+		lineString = lineString.trim();
 
 		String[] arguments = lineString.split("\s+");
 
