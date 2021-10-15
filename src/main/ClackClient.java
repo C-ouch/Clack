@@ -109,7 +109,7 @@ public class ClackClient {
 
 		lineString = lineString.trim();
 
-		String[] arguments = lineString.split("\s+");
+		String[] arguments = lineString.split("\\s+");
 
 		if ("DONE".equals(arguments[0])) {
 			closeConnection = true;
