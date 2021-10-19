@@ -76,7 +76,7 @@ public abstract class ClackData
 
     /**
      *
-     * @return
+     * @return current date
      */
     public Date getDate()
     {
@@ -88,6 +88,117 @@ public abstract class ClackData
      *  (contents of instant message or contents of a file)
      */
     public abstract String getData();
+
+    /**overloaded version of getData()
+     *
+     * @param key
+     * @return
+     */
+    public abstract String getData( String key );
+
+
+    /**
+     * Takes String and encrypt's it with Vigenere cipher with the key
+     * @param inputStringToEncrypt
+     * @param key
+     * @return
+     */
+    //Still don't know how to skip  non-alphabet characters
+    public static String encrypt(String inputStringToEncrypt, String key)
+    {
+
+        //inputStringToEncrypt  = inputStringToEncrypt.toUpperCase();
+
+        //Character Array
+        char[] inStr = inputStringToEncrypt.toCharArray();
+        int inStrLen = inStr.length;
+        int i,j;
+
+        // Creating new char arrays
+        char keyword[] = new char[inStrLen];
+        char encrypted[] = new char[inStrLen];
+
+
+/*
+        //generate key same size as inputString
+        for(i = 0, j= 0; i< inStrLen; ++i, ++j)
+        {
+            if(j == key.length())
+                j=0;
+            keyword[i] = key.charAt(j);
+            //decrypt("","");
+        }
+*/
+        for(i = 0, j = 0; i < inStrLen; ++i, ++j) {
+            if (Character.isAlphabetic(inStr[i])) {
+                j = j % key.length();
+                char k;
+                char a;
+
+                if (Character.isUpperCase(inStr[i])) {
+                    k = Character.toUpperCase(key.charAt(j));
+                    a = 'A';
+                } else {
+                    k = Character.toLowerCase(key.charAt(j));
+                    a = 'a';
+                }
+
+                encrypted[i] = (char) (((inStr[i] - a + k - a) % 26) + a);
+            }
+        }
+
+        return String.valueOf(encrypted);
+    }
+
+    /**
+     *This function decrypts the encrypted text
+     * @param inputStringToDecrypt
+     * @param key
+     * @return
+     */
+    public static String decrypt( String inputStringToDecrypt, String key )
+    {
+        //inputStringToDecrypt = inputStringToDecrypt.toUpperCase();
+
+        //Character Array
+        char inStr[] = inputStringToDecrypt.toCharArray();
+        int inStrLen = inStr.length;
+        int i,j;
+
+        char keyword[] = new char[inStrLen];
+        char decrypted[] = new char[inStrLen];
+/*
+        for(i = 0, j= 0; i< inStrLen; ++i, ++j)
+        {
+            if(j == key.length())
+                j=0;
+            keyword[i] = key.charAt(j);
+        }
+*/
+        for(i = 0, j = 0; i < inStrLen; ++i, ++j) {
+            if (Character.isAlphabetic(inStr[i])) {
+                j = j % key.length();
+                char k;
+                char a;
+
+                if (Character.isUpperCase(inStr[i])) {
+                    k = Character.toUpperCase(key.charAt(j));
+                    a = 'A';
+                } else {
+                    k = Character.toLowerCase(key.charAt(j));
+                    a = 'a';
+                }
+
+                decrypted[i] = (char) (((inStr[i] - a - k - a) % 26) + a);
+            }
+        }
+
+
+        return String.valueOf(decrypted);
+
+    }
+
+
 
 
 }

@@ -17,6 +17,12 @@ public class MessageClackData extends ClackData {
      * @param message - instant message
      * @param type -  the kind of data exchanged between the client and the server
      */
+    public MessageClackData( String userName, String message, String key, int type )
+    {
+        super(userName, type);
+        encrypt(message, key);
+    }
+
     public MessageClackData(String userName, String message, int type)
     {
         super(userName, type);
@@ -29,6 +35,9 @@ public class MessageClackData extends ClackData {
     public MessageClackData()
     {this("Anon", null,0);}
 
+
+
+
     //METHODS
 
     /**
@@ -39,6 +48,11 @@ public class MessageClackData extends ClackData {
     {
         return message;
     }
+
+    public String getData(String key) {return decrypt(message, key);}
+
+
+
 
 
     @Override
