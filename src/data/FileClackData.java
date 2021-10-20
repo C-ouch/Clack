@@ -1,8 +1,10 @@
 package data;
 
-import java.io.File;
+import java.io.*;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+
 
 /**
  * This class is a child class of ClackData.
@@ -37,40 +39,78 @@ public class FileClackData extends ClackData {
 
     //METHODS
 
+    /**
+     *
+     * @param fName
+     */
     public void setFileName(String fName) {
         this.fileName = fName;
     }
 
+    /**
+     *
+     * @return fileName
+     */
     public String getFileName() {
 
         return fileName;
     }
 
+    /**
+     *
+     * @return fileContents
+     */
     public String getData() {
         return fileContents;
     }
 
+    /**
+     *
+     * @param key
+     * @return
+     */
     public String getData(String key) {return decrypt(fileContents, key);}
 
-
-    public void readFileContent() throws IOException
+    /**
+     *
+     * @throws IOException
+     */
+    public void readFileContents() throws IOException
     {
-        FileReader reader = new FileReader(fileName);
-        boolean readFin = false;
+        fileContents= "";
+        try {
+            FileReader reader = new FileReader(fileName);
+            boolean readFin = false;
 
 
-        while (!readFin) {
-            int nextCharAsInt = reader.read();
+            while (!readFin) {
+                int nextCharAsInt = reader.read();
 
-            readFin = nextCharAsInt == -1;
+                readFin = nextCharAsInt == -1;
 
-            if (!readFin) {
-                char nextChar = (char) nextCharAsInt;
-                System.out.println(nextChar);
+                if (!readFin) {
+                    char nextChar = (char) nextCharAsInt;
+                    fileContents +=nextChar;
+
+                }
             }
+
+            reader.close();
+            System.out.println(fileContents);
+            System.out.println();
+        }catch (FileNotFoundException fnfe){
+            System.err.println("This file cannot be found.");
+        }catch (IOException ioe){
+            System.err.println("Error in reading or closing the file.");
         }
-        reader.close();
-        System.out.println();
+    }
+
+    public void readFileContents(String key) throws IOException
+    {
+        readFileContents();
+        fileContents=encrypt(fileContents,key);
+        System.out.println(fileContents);
+
     }
 
     public void writeFileContents() throws IOException {
