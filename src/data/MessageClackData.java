@@ -11,18 +11,24 @@ public class MessageClackData extends ClackData {
 
     //CONSTRUCTORS
 
-    /**Calls the super constructor and sets up message
+    /**Calls the super constructor and
      *
      * @param userName - name of client user
      * @param message - instant message
-     * @param type -  the kind of data exchanged between the client and the server
+     * @param key - the key is the word that is used for encryption
+     * @param type-  the kind of data exchanged between the client and the server
      */
     public MessageClackData( String userName, String message, String key, int type )
     {
         super(userName, type);
         encrypt(message, key);
     }
-
+    /**Calls the super constructor and sets up message
+     *
+     * @param userName - name of client user
+     * @param message - instant message
+     * @param type -  the kind of data exchanged between the client and the server
+     */
     public MessageClackData(String userName, String message, int type)
     {
         super(userName, type);
@@ -49,6 +55,11 @@ public class MessageClackData extends ClackData {
         return message;
     }
 
+    /**
+     *
+     * @param key
+     * @return decrypted message
+     */
     public String getData(String key) {return decrypt(message, key);}
 
 
@@ -56,8 +67,13 @@ public class MessageClackData extends ClackData {
 
 
     @Override
-    public int hashCode(){
-        return 0;
+    public int hashCode()
+    {
+        int r = 17;
+
+        r = 37 * r + (message == null ? 0 : message.hashCode());
+
+        return r;
     }
 
     @Override

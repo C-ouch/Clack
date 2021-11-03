@@ -1,6 +1,7 @@
 package data;
 
 import java.util.Date;
+import java.io.Serializable;
 
 /**
  *This class is a superclass of MessageClackData and FileClackData.
@@ -10,8 +11,7 @@ import java.util.Date;
  * @author Elek Ye and Evan Couchman
  */
 
-public abstract class ClackData
-{
+public abstract class ClackData implements Serializable {
     protected String userName;                    //private or public?
     protected int type;                           //private or public?
     protected Date date;                          //private or public?
@@ -104,6 +104,13 @@ public abstract class ClackData
      * @return
      */
     //Still don't know how to skip  non-alphabet characters
+
+    /**
+     * This functions encrypts
+     * @param inputStringToEncrypt
+     * @param key
+     * @return
+     */
     public static String encrypt(String inputStringToEncrypt, String key)
     {
 

@@ -50,7 +50,14 @@ public class ClackServer{
     }
     @Override
     public int hashCode(){
-        return port ;
+        int r = 17;
+
+        r = 37* r + port;
+        r = 37* r + (closeConnection ? 0 : 1);
+        r = 37* r + (dataToSendToClient == null ? 0 : dataToSendToClient.hashCode()); //ClackData Object
+        r = 37* r + (dataToReceiveFromClient == null ? 0 : dataToReceiveFromClient.hashCode()); //ClackData Object
+
+        return r;
     }
     @Override
     public boolean equals(Object other){

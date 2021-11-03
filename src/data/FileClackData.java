@@ -1,9 +1,7 @@
 package data;
 
 import java.io.*;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+
 
 
 /**
@@ -14,6 +12,7 @@ import java.io.IOException;
  */
 
 public class FileClackData extends ClackData {
+    private static final String EOS = null;
     private String fileName;
     private String fileContents;
 
@@ -78,9 +77,11 @@ public class FileClackData extends ClackData {
     public void readFileContents() throws IOException
     {
         fileContents= "";
+        String line;
         try {
-            FileReader reader = new FileReader(fileName);
-            boolean readFin = false;
+            File myFile = new File(fileName);
+            BufferedReader br = new BufferedReader(new FileReader(myFile));
+            /*boolean readFin = false;
 
 
             while (!readFin) {
@@ -93,11 +94,16 @@ public class FileClackData extends ClackData {
                     fileContents +=nextChar;
 
                 }
-            }
+            }*/
+            while ( (line = br.readLine()) != EOS )
+            {
+                fileContents += line + "\n";
 
-            reader.close();
-            System.out.println(fileContents);
-            System.out.println();
+            }
+            System.out.println( fileContents);
+            //reader.close();
+            //System.out.println(fileContents);
+            //System.out.println();
         }catch (FileNotFoundException fnfe){
             System.err.println("This file cannot be found.");
         }catch (IOException ioe){
@@ -115,15 +121,32 @@ public class FileClackData extends ClackData {
 
     public void writeFileContents() throws IOException {
 
+        try {
+            File myFile = new File(fileName);
+            BufferedWriter bw = new BufferedWriter(new FileWriter(myFile));
+
+            bw.write(fileContents);
+            bw.close();
+        }catch (FileNotFoundException fnfe){
+            System.err.println("This file cannot be found.");
+        }catch (IOException ioe){
+            System.err.println("Error in reading or closing the file.");
+        }
+
+
+    }
+
+    public void writeFileContents(String key) throws IOException{
+
     }
 
     @Override
     public int hashCode() {
         int result = 17;
 
-        result = 37 * result + (fileName == null ? 0 : fileName.hashCode());
-        result = 37 + result + (fileContents == null ? 0 : fileContents.hashCode());
-        result = 37 + result + type;
+        result = 37 * result + (fileName == null ? 0 : fileName.hashCode());         //String
+        result = 37 * result + (fileContents == null ? 0 : fileContents.hashCode()); //String
+        result = 37 * result + type;                                                 //Int
 
         return result;
 
