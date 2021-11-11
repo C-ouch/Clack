@@ -41,7 +41,9 @@ public class ClackClient {
      */
     private ClackData dataToReceiveFromServer;
 
-    /** private in and out stream */
+    /**
+     * private in and out stream
+     */
     private ObjectOutputStream outToServer;
     private ObjectInputStream inFromServer;
 
@@ -52,11 +54,28 @@ public class ClackClient {
 
     Socket skt;
 
-    public static void main(String[]args){
-        System.out.println("UserName"+args.length);
-        for (int i=0; i<args.length;i++){
-            System.out.println("Username"+i+":"+args[i]);
+    public static void main(String[] args) {
+//        System.out.println("Number of arguments: " + args.length);
+//        for (int i = 0; i < args.length; i++) {
+//            System.out.println("Argument #" + i + ": " + args[i]);
+//        }
+
+        ClackClient c;
+
+        if (args.length == 0) {
+            c = new ClackClient();
+        } else {
+
+            //need to check/test if username or other traits are within the string argument
+            //then put them into a new object for the correct constructor
+            String username = args[0];
+
+
+
+            c = new ClackClient(username);
         }
+
+        c.start();
     }
 
     /**
@@ -122,6 +141,7 @@ public class ClackClient {
      */
     public void start() {
         inFromStd = new Scanner(System.in);
+        inFromServer.close();
     }
 
     /**
@@ -145,6 +165,8 @@ public class ClackClient {
 
         if ("DONE".equals(arguments[0])) {
             closeConnection = true;
+            dataToSendToServer = new MessageClackData(this.userName, "",
+                    ClackData.CONSTANT_LOGOUT);
             return;
         }
 
@@ -183,10 +205,10 @@ public class ClackClient {
      * sends data to server
      */
     public void sendData() {
-        try{
+        try {
 
             outToServer.writeObject(dataToSendToServer);
-        }catch(IOException e){
+        } catch (IOException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -195,9 +217,9 @@ public class ClackClient {
      * receives data from the server
      */
     public void receiveData() {
-        try{
+        try {
             dataToReceiveFromServer = (ClackData) inFromServer.readObject();
-            inFromServer.close();
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -246,13 +268,13 @@ public class ClackClient {
 
         int r = 17;
 
-        r = 37* r + (userName == null ? 0 : userName.hashCode());
-        r = 37* r + (hostName == null ? 0 : hostName.hashCode());
-        r = 37* r + port;                         //Int Type
-        r = 37* r + (closeConnection ? 0 : 1);    //Boolean type
-        r = 37* r + (dataToSendToServer == null ? 0 : dataToSendToServer.hashCode()); //ClackData Object
-        r = 37* r + (dataToReceiveFromServer == null ? 0 : dataToReceiveFromServer.hashCode()); //ClackData Object
-        r = 37* r + (inFromStd == null ? 0 : inFromStd.hashCode()); //ClackData Object
+        r = 37 * r + (userName == null ? 0 : userName.hashCode());
+        r = 37 * r + (hostName == null ? 0 : hostName.hashCode());
+        r = 37 * r + port;                         //Int Type
+        r = 37 * r + (closeConnection ? 0 : 1);    //Boolean type
+        r = 37 * r + (dataToSendToServer == null ? 0 : dataToSendToServer.hashCode()); //ClackData Object
+        r = 37 * r + (dataToReceiveFromServer == null ? 0 : dataToReceiveFromServer.hashCode()); //ClackData Object
+        r = 37 * r + (inFromStd == null ? 0 : inFromStd.hashCode()); //ClackData Object
 
         return r;
     }
