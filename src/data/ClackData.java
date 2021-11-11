@@ -4,7 +4,7 @@ import java.util.Date;
 import java.io.Serializable;
 
 /**
- *This class is a superclass of MessageClackData and FileClackData.
+ * This class is a superclass of MessageClackData and FileClackData.
  * It consists of the username of the client user, the date and
  * time at which the data was sent and the data itself
  *
@@ -24,77 +24,76 @@ public abstract class ClackData implements Serializable {
 
 
     //CONSTRUCTORS
-    /** constructor to set up userName and type, date should be created automatically here
+
+    /**
+     * constructor to set up userName and type, date should be created automatically here
      *
      * @param userName
      * @param type
      */
-    public ClackData(String userName, int type)
-    {
+    public ClackData(String userName, int type) {
         this.userName = userName;
         this.type = type;
         this.date = new Date();
 
     }
 
-    /**constructor to create anonymous user
+    /**
+     * constructor to create anonymous user
      *
      * @param type
      */
-    public ClackData(int type)
-    {
+    public ClackData(int type) {
         this("Anon", type);
 
 
     }
 
-    /**default constructor*/
-    public ClackData()
-    {
-        this("Anon",0);
+    /**
+     * default constructor
+     */
+    public ClackData() {
+        this("Anon", 0);
     }
 
     //METHODS
 
     /**
-     *
      * @return the type of constant
      */
-    public int getType()
-    {
+    public int getType() {
         return type;
     }
 
     /**
-     *
      * @return the users name
      */
-    public String getUserName()
-    {
+    public String getUserName() {
         return userName;
     }
 
     /**
-     *
      * @return current date
      */
-    public Date getDate()
-    {
+    public Date getDate() {
         return date;
     }
 
-    /**abstract method
+    /**
+     * abstract method
+     *
      * @return the data contained in this class
-     *  (contents of instant message or contents of a file)
+     * (contents of instant message or contents of a file)
      */
     public abstract String getData();
 
-    /**overloaded version of getData()
+    /**
+     * overloaded version of getData()
      *
      * @param key
      * @return
      */
-    public abstract String getData( String key );
+    public abstract String getData(String key);
 
 
     /**
@@ -107,23 +106,23 @@ public abstract class ClackData implements Serializable {
 
     /**
      * This functions encrypts
+     *
      * @param inputStringToEncrypt
      * @param key
      * @return
      */
-    public static String encrypt(String inputStringToEncrypt, String key)
-    {
+    public static String encrypt(String inputStringToEncrypt, String key) {
 
         //inputStringToEncrypt  = inputStringToEncrypt.toUpperCase();
 
         //Character Array
         char[] inStr = inputStringToEncrypt.toCharArray();
         int inStrLen = inStr.length;
-        int i,j;
+        int i, j;
 
         // Creating new char arrays
-        char keyword[] = new char[inStrLen];
-        char encrypted[] = new char[inStrLen];
+//        char keyword[] = new char[inStrLen];
+        char[] encrypted = new char[inStrLen];
 
 
 /*
@@ -136,7 +135,7 @@ public abstract class ClackData implements Serializable {
             //decrypt("","");
         }
 */
-        for(i = 0, j = 0; i < inStrLen; ++i, ++j) {
+        for (i = 0, j = 0; i < inStrLen; ++i, ++j) {
             if (Character.isAlphabetic(inStr[i])) {
                 j = j % key.length();
                 char k;
@@ -151,6 +150,8 @@ public abstract class ClackData implements Serializable {
                 }
 
                 encrypted[i] = (char) (((inStr[i] - a + k - a) % 26) + a);
+            } else {
+                encrypted[i] = inStr[i];
             }
         }
 
@@ -158,22 +159,22 @@ public abstract class ClackData implements Serializable {
     }
 
     /**
-     *This function decrypts the encrypted text
+     * This function decrypts the encrypted text
+     *
      * @param inputStringToDecrypt
      * @param key
      * @return
      */
-    public static String decrypt( String inputStringToDecrypt, String key )
-    {
+    public static String decrypt(String inputStringToDecrypt, String key) {
         //inputStringToDecrypt = inputStringToDecrypt.toUpperCase();
 
         //Character Array
         char inStr[] = inputStringToDecrypt.toCharArray();
         int inStrLen = inStr.length;
-        int i,j;
+        int i, j;
 
         char keyword[] = new char[inStrLen];
-        char decrypted[] = new char[inStrLen];
+        char[] decrypted = new char[inStrLen];
 /*
         for(i = 0, j= 0; i< inStrLen; ++i, ++j)
         {
@@ -182,7 +183,7 @@ public abstract class ClackData implements Serializable {
             keyword[i] = key.charAt(j);
         }
 */
-        for(i = 0, j = 0; i < inStrLen; ++i, ++j) {
+        for (i = 0, j = 0; i < inStrLen; ++i, ++j) {
             if (Character.isAlphabetic(inStr[i])) {
                 j = j % key.length();
                 char k;
@@ -196,7 +197,10 @@ public abstract class ClackData implements Serializable {
                     a = 'a';
                 }
 
-                decrypted[i] = (char) (((inStr[i] - a - k - a) % 26) + a);
+//                decrypted[i] = (char) (((inStr[i] - a - k - a) % 26) + a);
+                decrypted[i] = (char) (((inStr[i] + 26 - k) % 26) + a);
+            } else {
+                decrypted[i] = inStr[i];
             }
         }
 
@@ -204,8 +208,6 @@ public abstract class ClackData implements Serializable {
         return String.valueOf(decrypted);
 
     }
-
-
 
 
 }

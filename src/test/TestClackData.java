@@ -22,7 +22,7 @@ public class TestClackData {
          System.out.println(ClackData.decrypt(words, "tup") );
      }*/
     public static void main(String arg[]) throws IOException {
-        String plaintext = "Fun";
+        String plaintext = "Fun HY";
         String keyword = "TUP";
         //ClackData.encrypt(plaintext,keyword);
         String result = ClackData.encrypt(plaintext, keyword);
@@ -31,9 +31,9 @@ public class TestClackData {
 
         FileClackData fcd = new FileClackData();
         fcd.setFileName("input.txt");
-        fcd.readFileContents();
+//        fcd.readFileContents();
         fcd.readFileContents(keyword);
-
+        System.out.println(fcd.getData(keyword));
     }
 }
 

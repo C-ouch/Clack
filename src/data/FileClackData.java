@@ -3,7 +3,6 @@ package data;
 import java.io.*;
 
 
-
 /**
  * This class is a child class of ClackData.
  * It consists of the name and contents of a file.
@@ -39,7 +38,6 @@ public class FileClackData extends ClackData {
     //METHODS
 
     /**
-     *
      * @param fName
      */
     public void setFileName(String fName) {
@@ -47,7 +45,6 @@ public class FileClackData extends ClackData {
     }
 
     /**
-     *
      * @return fileName
      */
     public String getFileName() {
@@ -56,7 +53,6 @@ public class FileClackData extends ClackData {
     }
 
     /**
-     *
      * @return fileContents
      */
     public String getData() {
@@ -64,57 +60,39 @@ public class FileClackData extends ClackData {
     }
 
     /**
-     *
      * @param key
      * @return
      */
-    public String getData(String key) {return decrypt(fileContents, key);}
+    public String getData(String key) {
+        return decrypt(fileContents, key);
+    }
 
     /**
-     *
      * @throws IOException
      */
-    public void readFileContents() throws IOException
-    {
-        fileContents= "";
+    public void readFileContents() throws IOException {
+        fileContents = "";
         String line;
         try {
             File myFile = new File(fileName);
             BufferedReader br = new BufferedReader(new FileReader(myFile));
-            /*boolean readFin = false;
 
-
-            while (!readFin) {
-                int nextCharAsInt = reader.read();
-
-                readFin = nextCharAsInt == -1;
-
-                if (!readFin) {
-                    char nextChar = (char) nextCharAsInt;
-                    fileContents +=nextChar;
-
-                }
-            }*/
-            while ( (line = br.readLine()) != EOS )
-            {
+            while ((line = br.readLine()) != EOS) {
                 fileContents += line + "\n";
 
             }
-            System.out.println( fileContents);
-            //reader.close();
-            //System.out.println(fileContents);
-            //System.out.println();
-        }catch (FileNotFoundException fnfe){
+            System.out.println(fileContents);
+
+        } catch (FileNotFoundException fnfe) {
             System.err.println("This file cannot be found.");
-        }catch (IOException ioe){
+        } catch (IOException ioe) {
             System.err.println("Error in reading or closing the file.");
         }
     }
 
-    public void readFileContents(String key) throws IOException
-    {
+    public void readFileContents(String key) throws IOException {
         readFileContents();
-        fileContents=encrypt(fileContents,key);
+        fileContents = encrypt(fileContents, key);
         System.out.println(fileContents);
 
     }
@@ -127,16 +105,16 @@ public class FileClackData extends ClackData {
 
             bw.write(fileContents);
             bw.close();
-        }catch (FileNotFoundException fnfe){
+        } catch (FileNotFoundException fnfe) {
             System.err.println("This file cannot be found.");
-        }catch (IOException ioe){
+        } catch (IOException ioe) {
             System.err.println("Error in reading or closing the file.");
         }
 
 
     }
 
-    public void writeFileContents(String key) throws IOException{
+    public void writeFileContents(String key) throws IOException {
 
     }
 
