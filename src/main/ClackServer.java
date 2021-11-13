@@ -3,7 +3,7 @@ package main;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
+
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -32,26 +32,46 @@ public class ClackServer {
     private ObjectOutputStream outToClient;
     private ObjectInputStream inFromClient;
 
+    /**
+     * Uses command line arguments to create a new
+     * ClackServer object, and starts the ClackServer object.
+     *
+     * @param args command line arguments
+     */
+    public static void main(String[] args)
+    {
+        ClackServer c;
+
+        if (args.length == 0) {
+            c = new ClackServer();
+        } else {
+            int portnum = Integer.parseInt(args[0]);
+            c = new ClackServer(portnum);
+        }
+        c.start();
+    }
+
 
     /**
-     * public constructor set the integer of port witch is 7000
+     * Constructor to set port
+     * @param port port for the server
      */
     public ClackServer(int port) {
-        if (dataToReceiveFromClient == null || dataToSendToClient == null || port < 7000) {
-            System.out.println(" port need to above 7000");
-        } else {
-            closeConnection = false;
+
+        if(port< 1024){
+            throw new IllegalArgumentException("Port needs to be more than 1024");
+        }
             this.port = port;
             dataToReceiveFromClient = null;
             dataToSendToClient = null;
             outToClient = null;
             inFromClient = null;
-        }
+
 
     }
 
     /**
-     * public constructor set the integer of port witch is 7000
+     * default constructor set the integer of port witch is 7000
      */
     public ClackServer() {
         this(7000);
@@ -62,8 +82,7 @@ public class ClackServer {
      */
     public void start() {
         try {
-            //int clientPort = getPort();
-            ServerSocket sskt = new ServerSocket(port);
+            ServerSocket sskt = new ServerSocket(this.port);
             Socket clientSocket = sskt.accept();
             outToClient = new ObjectOutputStream(clientSocket.getOutputStream());
             inFromClient = new ObjectInputStream(clientSocket.getInputStream());
@@ -79,10 +98,14 @@ public class ClackServer {
             inFromClient.close();
             outToClient.close();
             sskt.close();
+        }catch(IllegalArgumentException iae){
+            System.err.println("Invalid port used!");
 
+        }catch (NullPointerException npe){
+            System.err.println("an input/output stream was not properly instantiated");
         } catch (IOException ioe) {
 
-            System.err.println(ioe.getMessage());
+            System.err.println("An unexpected IO Exception has occured with the socket");
         }
 
     }
@@ -112,7 +135,7 @@ public class ClackServer {
 
             outToClient.writeObject(dataToSendToClient);
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
