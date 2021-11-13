@@ -12,9 +12,9 @@ import java.io.Serializable;
  */
 
 public abstract class ClackData implements Serializable {
-    protected String userName;                    //private or public?
-    protected int type;                           //private or public?
-    protected Date date;                          //private or public?
+    protected String userName;
+    protected int type;
+    protected Date date;
 
     //type variable's constant values:
     final static public int CONSTANT_LISTUSERS = 0;
@@ -28,8 +28,8 @@ public abstract class ClackData implements Serializable {
     /**
      * constructor to set up userName and type, date should be created automatically here
      *
-     * @param userName
-     * @param type
+     * @param userName user's name
+     * @param type represents the kind of data exchanged between the client and the server
      */
     public ClackData(String userName, int type) {
         this.userName = userName;
@@ -41,7 +41,7 @@ public abstract class ClackData implements Serializable {
     /**
      * constructor to create anonymous user
      *
-     * @param type
+     * @param type represents the kind of data exchanged between the client and the server
      */
     public ClackData(int type) {
         this("Anon", type);
@@ -90,30 +90,20 @@ public abstract class ClackData implements Serializable {
     /**
      * overloaded version of getData()
      *
-     * @param key
-     * @return
+     * @param key word that is used to encrypt
      */
     public abstract String getData(String key);
 
 
     /**
      * Takes String and encrypt's it with Vigenere cipher with the key
-     * @param inputStringToEncrypt
-     * @param key
-     * @return
+     * @param inputStringToEncrypt the string of letters to be encrypted
+     * @param key word that is used to encrypt/decrypt string
+     * @return  encrypted string
      */
-    //Still don't know how to skip  non-alphabet characters
 
-    /**
-     * This functions encrypts
-     *
-     * @param inputStringToEncrypt
-     * @param key
-     * @return
-     */
     public static String encrypt(String inputStringToEncrypt, String key) {
 
-        //inputStringToEncrypt  = inputStringToEncrypt.toUpperCase();
 
         //Character Array
         char[] inStr = inputStringToEncrypt.toCharArray();
@@ -121,20 +111,9 @@ public abstract class ClackData implements Serializable {
         int i, j;
 
         // Creating new char arrays
-//        char keyword[] = new char[inStrLen];
         char[] encrypted = new char[inStrLen];
 
 
-/*
-        //generate key same size as inputString
-        for(i = 0, j= 0; i< inStrLen; ++i, ++j)
-        {
-            if(j == key.length())
-                j=0;
-            keyword[i] = key.charAt(j);
-            //decrypt("","");
-        }
-*/
         for (i = 0, j = 0; i < inStrLen; ++i, ++j) {
             if (Character.isAlphabetic(inStr[i])) {
                 j = j % key.length();
@@ -161,28 +140,19 @@ public abstract class ClackData implements Serializable {
     /**
      * This function decrypts the encrypted text
      *
-     * @param inputStringToDecrypt
-     * @param key
-     * @return
+     * @param inputStringToDecrypt the encrypted string to be derypted
+     * @param key word that is used to encrypt/decrypt string
+     * @return decrypted string back to its original self
      */
     public static String decrypt(String inputStringToDecrypt, String key) {
-        //inputStringToDecrypt = inputStringToDecrypt.toUpperCase();
 
         //Character Array
         char inStr[] = inputStringToDecrypt.toCharArray();
         int inStrLen = inStr.length;
         int i, j;
 
-        char keyword[] = new char[inStrLen];
         char[] decrypted = new char[inStrLen];
-/*
-        for(i = 0, j= 0; i< inStrLen; ++i, ++j)
-        {
-            if(j == key.length())
-                j=0;
-            keyword[i] = key.charAt(j);
-        }
-*/
+
         for (i = 0, j = 0; i < inStrLen; ++i, ++j) {
             if (Character.isAlphabetic(inStr[i])) {
                 j = j % key.length();
@@ -197,7 +167,6 @@ public abstract class ClackData implements Serializable {
                     a = 'a';
                 }
 
-//                decrypted[i] = (char) (((inStr[i] - a - k - a) % 26) + a);
                 decrypted[i] = (char) (((inStr[i] + 26 - k) % 26) + a);
             } else {
                 decrypted[i] = inStr[i];

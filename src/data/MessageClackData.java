@@ -11,7 +11,8 @@ public class MessageClackData extends ClackData {
 
     //CONSTRUCTORS
 
-    /**Calls the super constructor and
+    /**This constructor should immediately encrypt the message using the key, i.e., this.message
+     should be an encrypted message.
      *
      * @param userName - name of client user
      * @param message - instant message
@@ -21,7 +22,7 @@ public class MessageClackData extends ClackData {
     public MessageClackData( String userName, String message, String key, int type )
     {
         super(userName, type);
-        encrypt(message, key);
+        this.message = encrypt(message, key);
     }
     /**Calls the super constructor and sets up message
      *
