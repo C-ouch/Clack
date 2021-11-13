@@ -58,7 +58,7 @@ public class MessageClackData extends ClackData {
 
     /**
      *
-     * @param key
+     * @param key- the key is the word that is used for encryption
      * @return decrypted message
      */
     public String getData(String key) {return decrypt(message, key);}
