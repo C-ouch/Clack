@@ -63,8 +63,8 @@ public class FileClackData extends ClackData {
     }
 
     /**
-     * @param key
-     * @return
+     * @param key- the key is the word that is used for encryption
+     * @return decrypted file contents
      */
     public String getData(String key) {
         return decrypt(fileContents, key);
@@ -96,7 +96,7 @@ public class FileClackData extends ClackData {
 
     /**
      *
-     * @param key
+     * @param key- the key is the word that is used for encryption
      * @throws IOException error in reading or closing file
      */
     public void readFileContents(String key) throws IOException {
@@ -124,7 +124,7 @@ public class FileClackData extends ClackData {
     }
 
     /**
-     *
+     * writes
      * @throws IOException error in reading or closing file
      */
     public void writeFileContents() throws IOException {
@@ -146,7 +146,7 @@ public class FileClackData extends ClackData {
 
     /**
      *
-     * @param key
+     * @param key- the key is the word that is used for encryption
      * @throws IOException error in reading or closing file
      */
     public void writeFileContents(String key) throws IOException {
