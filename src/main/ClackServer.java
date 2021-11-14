@@ -110,7 +110,7 @@ public class ClackServer {
     }
 
     /**
-     *need to still see if I need to see what problems needed to be caught
+     *Recieve data from client and checks that the connection is open or closed
      */
     public void receiveData() {
         try {
@@ -137,7 +137,8 @@ public class ClackServer {
     }
 
     /**
-     *  gets data  from client
+     *  gets port number from client
+     * @return port  port number for server
      */
     public int getPort() {
         return port;
