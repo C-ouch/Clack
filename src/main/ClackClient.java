@@ -61,47 +61,35 @@ public class ClackClient {
     Socket skt;
 
     public static void main(String[] args) {
-        String str = "sherlock@192.168.23.45:12415";
-        String username = "Default Username ";
-        String port = "Default port";
-        String ip = "";
-
-        if (str != null) {
-            Integer at = str.indexOf("@");
-            if (at > 0) {
-                username = str.substring(0, at);
-                ip = str.substring((at + 1));
-                Integer colon = ip.indexOf(":");
-                if (colon > 0) {
-                    port = ip.substring(colon + 1);
-                    ip = ip.substring(0, colon);
-                }
-
-            } else {
-                username = str;
-            }
-            System.out.println("Username =" + username);
-            System.out.println("IP" + ip);
-            System.out.println("port" + port);
-
-        }
-
-        /*ClackClient c;
 
         if (args.length == 0) {
-            c = new ClackClient();
-        } else {
+            ClackClient c = new ClackClient();
+            c.start();
 
-            //need to check/test if username or other traits are within the string argument
-            //then put them into a new object for the correct constructor
-             username = args[0];
-
-
-
-            c = new ClackClient(username);
         }
-
-        c.start();*/
+        else if (args.length == 1) {
+        // Take the first argument and split it into an array of strings based on the delimiters @ and :
+        String[] tokens = args[0].split("[@:]");
+        if (tokens.length == 1) { // case (i), only username given
+            ClackClient c = new ClackClient(tokens[0]);
+            c.start();
+        }
+        else if (tokens.length == 2) { // case (ii), username and hostname given
+            ClackClient c = new ClackClient(tokens[0], tokens[1]);
+            c.start();
+        } else { // case (iii), username, hostname, and port number given
+            try {
+                int portNumber = Integer.parseInt(tokens[3]);
+                ClackClient c = new ClackClient(tokens[0], tokens[1], portNumber);
+                c.start();
+            } catch (NumberFormatException nfe) {
+                System.err.println("The value given for port number is not an integer");
+            }
+        }
+    }
+        else {
+        System.err.println("Invalid number of arguments given, must be 0 or 1");
+    }
     }
 
     /**

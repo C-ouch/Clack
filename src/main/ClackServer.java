@@ -44,11 +44,12 @@ public class ClackServer {
 
         if (args.length == 0) {
             c = new ClackServer();
+            c.start();
         } else {
             int portnum = Integer.parseInt(args[0]);
             c = new ClackServer(portnum);
+            c.start();
         }
-        c.start();
     }
 
 
@@ -57,17 +58,19 @@ public class ClackServer {
      * @param port port for the server
      */
     public ClackServer(int port) {
-
-        if(port< 1024){
-            throw new IllegalArgumentException("Port needs to be more than 1024");
-        }
+        try{
+            if(port< 1024){
+                throw new IllegalArgumentException("Port needs to be more than 1024");
+            }
             this.port = port;
             dataToReceiveFromClient = null;
             dataToSendToClient = null;
             outToClient = null;
             inFromClient = null;
 
-
+        } catch (IllegalArgumentException iae) {
+            System.err.println(iae.getMessage());
+        }
     }
 
     /**
@@ -98,11 +101,7 @@ public class ClackServer {
             inFromClient.close();
             outToClient.close();
             sskt.close();
-        }catch(IllegalArgumentException iae){
-            System.err.println("Invalid port used!");
 
-        }catch (NullPointerException npe){
-            System.err.println("an input/output stream was not properly instantiated");
         } catch (IOException ioe) {
 
             System.err.println("An unexpected IO Exception has occured with the socket");
@@ -120,19 +119,17 @@ public class ClackServer {
             if (dataToReceiveFromClient.getType() == ClackData.CONSTANT_LOGOUT) {
                 closeConnection = true;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        } catch  (IOException | ClassNotFoundException ioe){
+            System.err.println(ioe.getMessage());
+
         }
-    }
+}
 
     /**
      *  send data  to client
      */
     public void sendData() {
         try {
-
             outToClient.writeObject(dataToSendToClient);
         } catch (IOException e) {
             e.printStackTrace();
