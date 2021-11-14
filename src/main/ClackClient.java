@@ -1,9 +1,14 @@
 package main;
 
 import java.io.IOException;
+import java.net.ConnectException;
+import java.net.NoRouteToHostException;
+import java.net.UnknownHostException;
+
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Objects;
 import java.util.Scanner;
 
 import data.ClackData;
@@ -51,16 +56,37 @@ public class ClackClient {
      * used to input from stdin
      */
     private Scanner inFromStd;
+    private final String key = "encryption";
 
     Socket skt;
 
     public static void main(String[] args) {
-//        System.out.println("Number of arguments: " + args.length);
-//        for (int i = 0; i < args.length; i++) {
-//            System.out.println("Argument #" + i + ": " + args[i]);
-//        }
+        String str = "sherlock@192.168.23.45:12415";
+        String username = "Default Username ";
+        String port = "Default port";
+        String ip = "";
 
-        ClackClient c;
+        if (str != null) {
+            Integer at = str.indexOf("@");
+            if (at > 0) {
+                username = str.substring(0, at);
+                ip = str.substring((at + 1));
+                Integer colon = ip.indexOf(":");
+                if (colon > 0) {
+                    port = ip.substring(colon + 1);
+                    ip = ip.substring(0, colon);
+                }
+
+            } else {
+                username = str;
+            }
+            System.out.println("Username =" + username);
+            System.out.println("IP" + ip);
+            System.out.println("port" + port);
+
+        }
+
+        /*ClackClient c;
 
         if (args.length == 0) {
             c = new ClackClient();
@@ -68,14 +94,14 @@ public class ClackClient {
 
             //need to check/test if username or other traits are within the string argument
             //then put them into a new object for the correct constructor
-            String username = args[0];
+             username = args[0];
 
 
 
             c = new ClackClient(username);
         }
 
-        c.start();
+        c.start();*/
     }
 
     /**
@@ -86,25 +112,23 @@ public class ClackClient {
      * @param port     port for the client
      */
     public ClackClient(String userName, String hostName, int port) {
-        if (userName == null) {
-            throw new IllegalArgumentException("userName should not be null!");
+        try {
+            this.userName = userName;
+            this.hostName = hostName;
+            this.port = port;
+            closeConnection = false;
+            dataToReceiveFromServer = null;
+            dataToSendToServer = null;
+
+            if (userName == null)
+                throw new IllegalArgumentException("userName should not be null!");
+            if (hostName == null)
+                throw new IllegalArgumentException("hostName should not be null!");
+            if (port < 1024)
+                throw new IllegalArgumentException("port should not b less than 1024!");
+        }catch (IllegalArgumentException iae) {
+            System.err.println("Illegal argument found: " + iae.getMessage());
         }
-
-        if (hostName == null) {
-            throw new IllegalArgumentException("hostName should not be null!");
-        }
-
-        if (port < 1024) {
-            throw new IllegalArgumentException("port should not b less than 1024!");
-        }
-
-        this.userName = userName;
-        this.hostName = hostName;
-        this.port = port;
-        closeConnection = false;
-        dataToReceiveFromServer = null;
-        dataToSendToServer = null;
-
     }
 
     /**
@@ -141,7 +165,33 @@ public class ClackClient {
      */
     public void start() {
         inFromStd = new Scanner(System.in);
-        inFromServer.close();
+        try {
+            Socket skt = new Socket(this.hostName, this.port);
+            outToServer = new ObjectOutputStream(skt.getOutputStream());
+            inFromServer = new ObjectInputStream(skt.getInputStream());
+
+            while (!closeConnection) {
+                readClientData();
+                sendData();
+                receiveData();
+                printData();
+                }
+
+            inFromStd.close();
+            inFromServer.close();
+            outToServer.close();
+            skt.close();
+
+
+        } catch ( UnknownHostException uhe ) {
+            System.err.println( "Host not known: " + uhe.getMessage() );
+        } catch ( NoRouteToHostException nrhe ) {
+            System.err.println( "Route to host not available" );
+        } catch ( ConnectException ce ) {
+            System.err.println( "Connection Refused" );
+        } catch ( IOException ioe ) {
+            System.err.println( "IO Exception generated: " + ioe.getMessage() );
+        }
     }
 
     /**
@@ -219,11 +269,9 @@ public class ClackClient {
     public void receiveData() {
         try {
             dataToReceiveFromServer = (ClackData) inFromServer.readObject();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        } catch (ClassNotFoundException | IOException cnf) {
+            System.err.println("Read failed: " + cnf.getMessage());
+            //e.printStackTrace();
         }
     }
 
@@ -234,12 +282,16 @@ public class ClackClient {
         /* use dataToSendToServer as dataToReceiveFromServer in project2 */
         dataToReceiveFromServer = dataToSendToServer;
         if (dataToReceiveFromServer == null) {
-            return;
+            System.out.println("The reference is null, there is no data to print");
+        }else if (dataToReceiveFromServer instanceof FileClackData) {
+            System.out.println(getHostName() + " sent a file: " + ((FileClackData)dataToReceiveFromServer).getFileName());
+            System.out.println("with contents: " + dataToReceiveFromServer.getData(key));
+            System.out.println("with type: " + dataToReceiveFromServer.getType());
+        } else if (dataToReceiveFromServer instanceof MessageClackData) {
+            System.out.println(getHostName() + " sent a message with contents: " + dataToReceiveFromServer.getData(key));
+            System.out.println("with type: " + dataToReceiveFromServer.getType());
         }
 
-        if (dataToReceiveFromServer.getUserName().equals(this.userName)) {
-            System.out.println(dataToReceiveFromServer.getData());
-        }
     }
 
     /**
@@ -281,12 +333,21 @@ public class ClackClient {
 
     @Override
     public boolean equals(Object other) {
-
-        return true;
+        if (this == other) return true;
+        if (other == null || getClass() != other.getClass()) return false;
+        ClackClient client = (ClackClient) other;
+        return port == client.port &&
+                closeConnection == client.closeConnection &&
+                Objects.equals(userName, client.userName) &&
+                Objects.equals(hostName, client.hostName) &&
+                Objects.equals(dataToReceiveFromServer, client.dataToReceiveFromServer) &&
+                Objects.equals(dataToSendToServer, client.dataToSendToServer);
     }
 
     @Override
     public String toString() {
-        return "username:" + userName + ", hostname:" + hostName + ", port:" + port;
-    }
+        return "username:" + userName + ", hostname:" + hostName + ", port:" + port+ ", closeConnection=" + closeConnection +
+                ", dataToReceiveFromClient=" + dataToReceiveFromServer +
+                ", dataToSendToClient=" + dataToSendToServer;    }
+
 }
