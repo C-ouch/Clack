@@ -32,45 +32,49 @@ public class ClackServer {
     private ObjectOutputStream outToClient;
     private ObjectInputStream inFromClient;
 
+
+
+
+
     /**
      * Uses command line arguments to create a new
      * ClackServer object, and starts the ClackServer object.
+     * Making sue each arguments get passed to correct constructor.
      *
      * @param args command line arguments
      */
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         ClackServer c;
 
         if (args.length == 0) {
             c = new ClackServer();
             c.start();
         } else {
-            int portnum = Integer.parseInt(args[0]);
-            c = new ClackServer(portnum);
-            c.start();
+            try {
+                int portnum = Integer.parseInt(args[0]);
+                c = new ClackServer(portnum);
+                c.start();
+            } catch (NumberFormatException e) {
+                System.err.println("Expect an integer for the port number!");
+            }
         }
     }
 
 
     /**
      * Constructor to set port
+     *
      * @param port port for the server
      */
-    public ClackServer(int port) {
-        try{
-            if(port< 1024){
-                throw new IllegalArgumentException("Port needs to be more than 1024");
-            }
-            this.port = port;
-            dataToReceiveFromClient = null;
-            dataToSendToClient = null;
-            outToClient = null;
-            inFromClient = null;
-
-        } catch (IllegalArgumentException iae) {
-            System.err.println(iae.getMessage());
+    public ClackServer(int port) throws IllegalArgumentException {
+        if (port < 1024) {
+            throw new IllegalArgumentException("Port needs to be more than 1024");
         }
+        this.port = port;
+        dataToReceiveFromClient = null;
+        dataToSendToClient = null;
+        outToClient = null;
+        inFromClient = null;
     }
 
     /**
@@ -82,6 +86,11 @@ public class ClackServer {
 
     /**
      * public constructor set start
+     *This method starts looking for
+     * communication with the client
+     *
+     * While the connection is open, the start() method receives data from a client, and echoes it
+     * back to the client.
      */
     public void start() {
         try {
@@ -93,6 +102,7 @@ public class ClackServer {
             while (!closeConnection) {
                 receiveData();
                 dataToSendToClient = dataToReceiveFromClient;
+                System.out.println("Received: " + dataToReceiveFromClient.getData());
                 if (!closeConnection) {
                     sendData();
                 }
@@ -110,7 +120,7 @@ public class ClackServer {
     }
 
     /**
-     *Recieve data from client and checks that the connection is open or closed
+     * Recieve data from client and checks that the connection is open or closed
      */
     public void receiveData() {
         try {
@@ -119,14 +129,14 @@ public class ClackServer {
             if (dataToReceiveFromClient.getType() == ClackData.CONSTANT_LOGOUT) {
                 closeConnection = true;
             }
-        } catch  (IOException | ClassNotFoundException ioe){
+        } catch (IOException | ClassNotFoundException ioe) {
             System.err.println(ioe.getMessage());
 
         }
-}
+    }
 
     /**
-     *  send data  to client
+     * send data  to client
      */
     public void sendData() {
         try {
@@ -137,8 +147,9 @@ public class ClackServer {
     }
 
     /**
-     *  gets port number from client
-     * @return port  port number for server
+     * gets port number from client
+     *
+     * @return port- port number for server
      */
     public int getPort() {
         return port;
@@ -163,6 +174,6 @@ public class ClackServer {
 
     @Override
     public String toString() {
-        return toString();
+        return "";
     }
 }
