@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Objects;
 
 import data.ClackData;
 import data.MessageClackData;
@@ -84,6 +85,8 @@ public class ClackServer {
         this(7000);
     }
 
+
+
     /**
      * public constructor set start
      *This method starts looking for
@@ -120,6 +123,17 @@ public class ClackServer {
     }
 
     /**
+     * gets port number from client
+     *
+     * @return port- port number for server
+     */
+    public int getPort() {
+        return port;
+    }
+
+
+
+    /**
      * Recieve data from client and checks that the connection is open or closed
      */
     public void receiveData() {
@@ -146,13 +160,10 @@ public class ClackServer {
         }
     }
 
-    /**
-     * gets port number from client
-     *
-     * @return port- port number for server
-     */
-    public int getPort() {
-        return port;
+    public void broadcast() {
+    }
+
+    public static void remove() {
     }
 
     @Override
@@ -169,11 +180,24 @@ public class ClackServer {
 
     @Override
     public boolean equals(Object other) {
-        return true;
+        if (this == other) return true;
+        if (other == null || getClass() != other.getClass()) return false;
+        ClackServer server = (ClackServer) other;
+        return port == server.port &&
+                closeConnection == server.closeConnection &&
+                Objects.equals(dataToReceiveFromClient, server.dataToReceiveFromClient) &&
+                Objects.equals(dataToSendToClient, server.dataToSendToClient);
     }
 
     @Override
     public String toString() {
-        return "";
+        return "ClackServer{" +
+                "port=" + port +
+                ", closeConnection=" + closeConnection +
+                ", dataToReceiveFromClient=" + dataToReceiveFromClient +
+                ", dataToSendToClient=" + dataToSendToClient +
+                '}';
     }
+
+
 }
