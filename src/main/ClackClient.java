@@ -53,10 +53,25 @@ public class ClackClient {
     private ObjectInputStream inFromServer;
 
     /**
+     * get InputStream from ClackClient
+     *
+     * @return InputStream
+     */
+    public ObjectInputStream getInputStream() {
+        return inFromServer;
+    }
+
+    /**
      * used to input from stdin
      */
     private Scanner inFromStd;
     //private final String key = "encryption";
+
+    /**
+     * Client side server listener
+     */
+    ClientSideServerListener clientSideServerListener;
+
 
     /**
      * Uses command line arguments to create a new
@@ -146,11 +161,15 @@ public class ClackClient {
         this("anonymous", "localhost", 7000);
     }
 
+    public boolean getCloseConnection() {
+        return closeConnection;
+    }
+
     /**
      * method to start a connection
      * This method starts this client’s
      * communication with the server
-     *
+     * <p>
      * While the connection is still open, the start() method reads in data typed by a client user
      * at standard input and sends the data to the server. Then it expects data to be echoed back
      * by the server to the client, and print the echoed data.
@@ -163,14 +182,17 @@ public class ClackClient {
             outToServer = new ObjectOutputStream(skt.getOutputStream());
             inFromServer = new ObjectInputStream(skt.getInputStream());
 
+            clientSideServerListener = new ClientSideServerListener(this);
+            new Thread(clientSideServerListener).start();
+
             while (!closeConnection) {
                 readClientData();
                 sendData();
-                if (closeConnection) {
-                    break;
-                }
-                receiveData();
-                printData();
+                //if (closeConnection) {
+                //    break;
+                //}
+                //receiveData();
+                //printData();
             }
 
             inFromStd.close();
@@ -197,7 +219,7 @@ public class ClackClient {
             return;
         }
 
-        System.out.print("command>");
+//        System.out.print("command>");
         String lineString = inFromStd.nextLine();
         if (lineString == null) {
             closeConnection = true;
@@ -231,6 +253,8 @@ public class ClackClient {
             }
         } else if ("LISTUSERS".equals(arguments[0])) {
             // do nothing now
+            dataToSendToServer = new MessageClackData(this.userName, "",
+                    ClackData.CONSTANT_LISTUSERS);
         } else {// initialize dataToSendToServer as a MessageClackData
             dataToSendToServer = new MessageClackData(this.userName, lineString,
                     ClackData.CONSTANT_SENDMESSAGE);
@@ -256,6 +280,10 @@ public class ClackClient {
         try {
             dataToReceiveFromServer = (ClackData) inFromServer.readObject();
         } catch (ClassNotFoundException | IOException cnf) {
+            if (cnf.getMessage().equals("Socket closed")) {
+                return;
+            }
+
             System.err.println("Read failed: " + cnf.getMessage());
             //cnf.printStackTrace();
         }
@@ -268,7 +296,9 @@ public class ClackClient {
         /* use dataToSendToServer as dataToReceiveFromServer in project2 */
 //        dataToReceiveFromServer = dataToSendToServer;
         if (dataToReceiveFromServer == null) {
-            System.out.println("The reference is null, there is no data to print");
+            if (!closeConnection) {
+                System.out.println("The reference is null, there is no data to print");
+            }
         } else if (dataToReceiveFromServer instanceof FileClackData) {
             System.out.println(getHostName() + " sent a file: " + ((FileClackData) dataToReceiveFromServer).getFileName());
             System.out.println("with contents: " + dataToReceiveFromServer.getData());
@@ -332,9 +362,9 @@ public class ClackClient {
 
     @Override
     public String toString() {
-        return "username:" + userName + ", hostname:" + hostName + ", port:" + port + ", closeConnection=" + closeConnection +
+        return "<ClackClient username:" + userName + ", hostname:" + hostName + ", port:" + port + ", closeConnection=" + closeConnection +
                 ", dataToReceiveFromClient=" + dataToReceiveFromServer +
-                ", dataToSendToClient=" + dataToSendToServer;
+                ", dataToSendToClient=" + dataToSendToServer + ">";
     }
 
 }

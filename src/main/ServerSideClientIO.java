@@ -1,85 +1,118 @@
 package main;
 
 import data.ClackData;
+import data.MessageClackData;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-
 public class ServerSideClientIO implements Runnable {
-   /**
-    * boolean representing the server is accepting any clients or not
-    */
-   private boolean closeConnection;
-   /**
-    * private data receive or send to client
-    */
-   private ClackData dataToReceiveFromClient;
-   private ClackData dataToSendToClient;
-   /**
-    * private in and out stream
-    */
-   private ObjectOutputStream outToClient;
-   private ObjectInputStream inFromClient;
-   /**
-    * ClackServer object representing the master server
-    */
-   private ClackServer server;
-   /**
-    * Socket object representing the socket accepted from the client
-    */
-   private Socket clientSocket;
 
    /**
-    *
-    *
-    * @param server - ClackServer object representing the master server
-    * @param clientSocket -  Socket object representing the socket accepted from the client
+    * Flag to indicate if the client is still connected.
     */
-   public ServerSideClientIO (ClackServer server, Socket clientSocket){
+   boolean closeConnection;
+
+   /**
+    * Data field
+    */
+   ClackData dataToReceiveFromClient;
+   ClackData dataToSendToClient;
+
+   /**
+    * Socket IO stream
+    */
+   ObjectInputStream inFromClient;
+   ObjectOutputStream outToClient;
+
+   /**
+    * Clack Server object
+    */
+   ClackServer server;
+
+   /**
+    * Client socket
+    */
+   Socket clientSocket;
+
+   /**
+    * Constructor
+    *
+    * @param server       ClackServer object
+    * @param clientSocket Client socket
+    */
+   public ServerSideClientIO(ClackServer server, Socket clientSocket) {
       this.server = server;
       this.clientSocket = clientSocket;
       closeConnection = false;
       dataToReceiveFromClient = null;
       dataToSendToClient = null;
-
+      inFromClient = null;
+      outToClient = null;
    }
 
    /**
-    *
+    * Run method
     */
    @Override
-   public void run(){
+   public void run() {
       try {
          outToClient = new ObjectOutputStream(clientSocket.getOutputStream());
          inFromClient = new ObjectInputStream(clientSocket.getInputStream());
 
          while (!closeConnection) {
             receiveData();
+
             if (!closeConnection) {
-               this.server.broadcast();
-               ClackServer.remove();
+               setDataToSendToClient(dataToSendToClient);
+               server.broadcast(dataToSendToClient);
             }
          }
-      } catch (IOException e) {
-         e.printStackTrace();
+
+         outToClient.close();
+         inFromClient.close();
+
+      } catch (IOException ioe) {
+         System.err.println("An unexpected IO Exception has occurred with the socket");
+      }
+
+   }
+
+   /**
+    * Receive data from client and checks that the connection is open or closed
+    */
+   public void receiveData() {
+      try {
+         dataToReceiveFromClient = (ClackData) inFromClient.readObject();
+
+         if (dataToReceiveFromClient.getType() == ClackData.CONSTANT_LOGOUT) {
+            closeConnection = true;
+            server.remove(this);
+         } else if (dataToReceiveFromClient.getType() == ClackData.CONSTANT_LISTUSERS) {
+            String users_info = "";
+            for (ServerSideClientIO client : server.serverSideClientIOList) {
+               users_info += client.dataToReceiveFromClient.getUserName() + ", ";
+            }
+            users_info += "\n";
+
+            dataToSendToClient = new MessageClackData("Server", users_info, ClackData.CONSTANT_LISTUSERS);
+         } else {
+            dataToSendToClient = dataToReceiveFromClient;
+         }
+
+      } catch (IOException | ClassNotFoundException ioe) {
+         System.err.println(ioe.getMessage() + " : ");
+         ioe.printStackTrace(System.err);
+         closeConnection = true;
+         server.remove(this);
+
       }
    }
 
    /**
-    * receives data from the client
-    */
-   public void receiveData(){
-
-
-   }
-
-   /**
-    * sends data to the corresponding client
-    *
-    * broadcast() calls this method
+    * Send data to the client
     */
    public void sendData() {
       try {
@@ -90,11 +123,13 @@ public class ServerSideClientIO implements Runnable {
    }
 
    /**
-    * sets the ClackData variable dataToSendToClient
-    * @param dataToSendToClient - ClackData object representing data sent to client
+    * Set the data to send to the client
+    *
+    * @param dataToSendToClient ClackData object
     */
-   public void setDataToSendToClient(ClackData dataToSendToClient){
-      this.dataToReceiveFromClient = dataToSendToClient;
+   public void setDataToSendToClient(ClackData dataToSendToClient) {
+      this.dataToSendToClient = dataToSendToClient;
    }
+
 
 }

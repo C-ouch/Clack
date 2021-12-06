@@ -1,15 +1,11 @@
 package main;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Objects;
-
+import java.util.ArrayList;
 import data.ClackData;
-import data.MessageClackData;
+
 
 public class ClackServer {
 
@@ -21,21 +17,6 @@ public class ClackServer {
      * boolean representing the server is accepting any clients or not
      */
     private boolean closeConnection;
-    /**
-     * private data receive or send to client
-     */
-    private ClackData dataToReceiveFromClient;
-    private ClackData dataToSendToClient;
-
-    /**
-     * private in and out stream
-     */
-    private ObjectOutputStream outToClient;
-    private ObjectInputStream inFromClient;
-
-
-
-
 
     /**
      * Uses command line arguments to create a new
@@ -61,6 +42,7 @@ public class ClackServer {
         }
     }
 
+    ArrayList<ServerSideClientIO> serverSideClientIOList;
 
     /**
      * Constructor to set port
@@ -72,10 +54,10 @@ public class ClackServer {
             throw new IllegalArgumentException("Port needs to be more than 1024");
         }
         this.port = port;
-        dataToReceiveFromClient = null;
-        dataToSendToClient = null;
-        outToClient = null;
-        inFromClient = null;
+
+        closeConnection = false;
+        serverSideClientIOList = new ArrayList<>();
+
     }
 
     /**
@@ -84,8 +66,6 @@ public class ClackServer {
     public ClackServer() {
         this(7000);
     }
-
-
 
     /**
      * public constructor set start
@@ -98,26 +78,55 @@ public class ClackServer {
     public void start() {
         try {
             ServerSocket sskt = new ServerSocket(this.port);
-            Socket clientSocket = sskt.accept();
-            outToClient = new ObjectOutputStream(clientSocket.getOutputStream());
-            inFromClient = new ObjectInputStream(clientSocket.getInputStream());
+            //Socket clientSocket = sskt.accept();
+            //outToClient = new ObjectOutputStream(clientSocket.getOutputStream());
+            //inFromClient = new ObjectInputStream(clientSocket.getInputStream());
 
             while (!closeConnection) {
-                receiveData();
-                dataToSendToClient = dataToReceiveFromClient;
-                System.out.println("Received: " + dataToReceiveFromClient.getData());
-                if (!closeConnection) {
-                    sendData();
-                }
+                Socket clientSocket = sskt.accept();
+                ServerSideClientIO serverSideClientIO = new ServerSideClientIO(this, clientSocket);
+                serverSideClientIOList.add(serverSideClientIO);
+                new Thread(serverSideClientIO).start();
+
             }
 
-            inFromClient.close();
-            outToClient.close();
+            //inFromClient.close();
+            //outToClient.close();
             sskt.close();
 
         } catch (IOException ioe) {
 
             System.err.println("An unexpected IO Exception has occured with the socket");
+        }
+
+    }
+
+    public synchronized void broadcast(ClackData dataToBroadcastToClients) {
+        for (ServerSideClientIO s : serverSideClientIOList) {
+            s.setDataToSendToClient(dataToBroadcastToClients);
+            s.sendData();
+        }
+    }
+
+    public synchronized void remove(ServerSideClientIO serverSideClientToRemove) {
+        serverSideClientIOList.remove(serverSideClientToRemove);
+        try{
+            serverSideClientToRemove.inFromClient.close();
+        }
+        catch (IOException ioe) {
+            System.err.println("An unexpected IO Exception has occured with the socket");
+        }
+        try{
+            serverSideClientToRemove.outToClient.close();
+        }
+        catch (IOException ioe) {
+            System.err.println("An unexpected IO Exception has occured with the socket");
+        }
+        try{
+            serverSideClientToRemove.clientSocket.close();
+        }
+        catch (IOException ioe) {
+            System.err.println("An unexpected IO Exception has occurred with the socket");
         }
 
     }
@@ -131,73 +140,25 @@ public class ClackServer {
         return port;
     }
 
-
-
-    /**
-     * Recieve data from client and checks that the connection is open or closed
-     */
-    public void receiveData() {
-        try {
-            dataToReceiveFromClient = (ClackData) inFromClient.readObject();
-
-            if (dataToReceiveFromClient.getType() == ClackData.CONSTANT_LOGOUT) {
-                closeConnection = true;
-            }
-        } catch (IOException | ClassNotFoundException ioe) {
-            System.err.println(ioe.getMessage());
-
-        }
-    }
-
-    /**
-     * send data  to client
-     */
-    public void sendData() {
-        try {
-            outToClient.writeObject(dataToSendToClient);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void broadcast() {
-    }
-
-    public static void remove() {
-    }
-
     @Override
     public int hashCode() {
         int r = 17;
 
         r = 37 * r + port;
         r = 37 * r + (closeConnection ? 0 : 1);
-        r = 37 * r + (dataToSendToClient == null ? 0 : dataToSendToClient.hashCode()); //ClackData Object
-        r = 37 * r + (dataToReceiveFromClient == null ? 0 : dataToReceiveFromClient.hashCode()); //ClackData Object
+        // r = 37 * r + (dataToSendToClient == null ? 0 : dataToSendToClient.hashCode()); //ClackData Object
+        // r = 37 * r + (dataToReceiveFromClient == null ? 0 : dataToReceiveFromClient.hashCode()); //ClackData Object
 
         return r;
     }
 
     @Override
     public boolean equals(Object other) {
-        if (this == other) return true;
-        if (other == null || getClass() != other.getClass()) return false;
-        ClackServer server = (ClackServer) other;
-        return port == server.port &&
-                closeConnection == server.closeConnection &&
-                Objects.equals(dataToReceiveFromClient, server.dataToReceiveFromClient) &&
-                Objects.equals(dataToSendToClient, server.dataToSendToClient);
+        return this == other;
     }
 
     @Override
     public String toString() {
-        return "ClackServer{" +
-                "port=" + port +
-                ", closeConnection=" + closeConnection +
-                ", dataToReceiveFromClient=" + dataToReceiveFromClient +
-                ", dataToSendToClient=" + dataToSendToClient +
-                '}';
+        return "<ClackServer 0x" + this.hashCode() + ">";
     }
-
-
 }
