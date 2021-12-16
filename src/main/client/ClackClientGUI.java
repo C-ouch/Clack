@@ -333,4 +333,3 @@ class ClackClientGUI extends GUIDesign {
 
 
 }
-
