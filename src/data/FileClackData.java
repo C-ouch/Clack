@@ -1,6 +1,9 @@
 package data;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Base64;
 
 
 /**
@@ -14,6 +17,8 @@ public class FileClackData extends ClackData {
     private static final String EOS = null;
     private String fileName;
     private String fileContents;
+    public String mime;
+
 
     //Constructors
 
@@ -25,6 +30,12 @@ public class FileClackData extends ClackData {
     public FileClackData(String userName, String fileName, int type) {
         super(userName, type);
         this.fileName = fileName;
+        try{
+            readFileContents();
+        }
+        catch (Exception e) {
+            e.printStackTrace(System.err);
+        }
     }
 
     /**
@@ -50,7 +61,6 @@ public class FileClackData extends ClackData {
      * @return fileName The File's name
      */
     public String getFileName() {
-
         return fileName;
     }
 
@@ -76,22 +86,11 @@ public class FileClackData extends ClackData {
      */
     public void readFileContents() throws IOException {
         fileContents = "";
-        String line;
-        try {
-            File myFile = new File(fileName);
-            BufferedReader br = new BufferedReader(new FileReader(myFile));
-
-            while ((line = br.readLine()) != EOS) {
-                fileContents += line + "\n";
-
-            }
-            //System.out.println(fileContents);
-            br.close();
-        } catch (FileNotFoundException fnfe) {
-            System.err.println("This file cannot be found.");
-        } catch (IOException ioe) {
-            System.err.println("Error in reading or closing the file.");
-        }
+        Path path = new File(fileName).toPath();
+        mime = Files.probeContentType(path);
+        System.err.println("File: " + fileName + "\nMIME: " + mime);
+        byte[] buffer = Files.readAllBytes(path);
+        fileContents = Base64.getEncoder().encodeToString(buffer);
     }
 
     /**
@@ -101,26 +100,8 @@ public class FileClackData extends ClackData {
      */
     public void readFileContents(String key) throws IOException {
         fileContents = "";
-        String line;
-        try {
-            File myFile = new File(fileName);
-            BufferedReader br = new BufferedReader(new FileReader(myFile));
-
-            while ((line = br.readLine()) != EOS) {
-                fileContents += line + "\n";
-
-            }
-            fileContents = encrypt(fileContents, key);
-            //System.out.println(fileContents);
-            br.close();
-        } catch (FileNotFoundException fnfe) {
-            System.err.println("This file cannot be found.");
-        } catch (IOException ioe) {
-            System.err.println("Error in reading or closing the file.");
-        }
-
-
-
+        readFileContents();
+        fileContents = encrypt(fileContents, key);
     }
 
     /**
@@ -128,20 +109,8 @@ public class FileClackData extends ClackData {
      * @throws IOException error in reading or closing file
      */
     public void writeFileContents() throws IOException {
-
-        try {
-            File myFile = new File(fileName);
-            BufferedWriter bw = new BufferedWriter(new FileWriter(myFile));
-
-            bw.write(fileContents);
-            bw.close();
-        } catch (FileNotFoundException fnfe) {
-            System.err.println("This file cannot be found.");
-        } catch (IOException ioe) {
-            System.err.println("Error in reading or closing the file.");
-        }
-
-
+        File myFile = new File(fileName);
+        Files.write(myFile.toPath(), Base64.getDecoder().decode(fileContents));
     }
 
     /**
@@ -150,18 +119,8 @@ public class FileClackData extends ClackData {
      * @throws IOException error in reading or closing file
      */
     public void writeFileContents(String key) throws IOException {
-        try {
-            File myFile = new File(fileName);
-            BufferedWriter bw = new BufferedWriter(new FileWriter(myFile));
-            fileContents = decrypt(fileContents,key);
-            bw.write(fileContents);
-            bw.close();
-        } catch (FileNotFoundException fnfe) {
-            System.err.println("This file cannot be found.");
-        } catch (IOException ioe) {
-            System.err.println("Error in reading or closing the file.");
-        }
-
+        fileContents = decrypt(fileContents, key);
+        writeFileContents();
     }
 
     @Override
@@ -194,7 +153,7 @@ public class FileClackData extends ClackData {
      */
     @Override
     public String toString() {
-        return "";
+        return String.format("<%s file_name=\"%s\">", getClass().getSimpleName(), fileName == null ? "null" : fileName);
     }
 
 

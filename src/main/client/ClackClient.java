@@ -1,4 +1,4 @@
-package main;
+package main.client;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -52,14 +52,13 @@ public class ClackClient {
     private ObjectOutputStream outToServer;
     private ObjectInputStream inFromServer;
 
-    /**
+    /*
      * get InputStream from ClackClient
-     *
      * @return InputStream
      */
-    public ObjectInputStream getInputStream() {
-        return inFromServer;
-    }
+//    public ObjectInputStream getInputStream() {
+//        return inFromServer;
+//    }
 
     /**
      * used to input from stdin
@@ -161,15 +160,11 @@ public class ClackClient {
         this("anonymous", "localhost", 7000);
     }
 
-    public boolean getCloseConnection() {
-        return closeConnection;
-    }
-
     /**
      * method to start a connection
      * This method starts this client’s
      * communication with the server
-     * <p>
+     *
      * While the connection is still open, the start() method reads in data typed by a client user
      * at standard input and sends the data to the server. Then it expects data to be echoed back
      * by the server to the client, and print the echoed data.
@@ -188,11 +183,6 @@ public class ClackClient {
             while (!closeConnection) {
                 readClientData();
                 sendData();
-                //if (closeConnection) {
-                //    break;
-                //}
-                //receiveData();
-                //printData();
             }
 
             inFromStd.close();
@@ -219,7 +209,7 @@ public class ClackClient {
             return;
         }
 
-//        System.out.print("command>");
+        System.out.print("command>");
         String lineString = inFromStd.nextLine();
         if (lineString == null) {
             closeConnection = true;
@@ -280,10 +270,6 @@ public class ClackClient {
         try {
             dataToReceiveFromServer = (ClackData) inFromServer.readObject();
         } catch (ClassNotFoundException | IOException cnf) {
-            if (cnf.getMessage().equals("Socket closed")) {
-                return;
-            }
-
             System.err.println("Read failed: " + cnf.getMessage());
             //cnf.printStackTrace();
         }
@@ -296,9 +282,7 @@ public class ClackClient {
         /* use dataToSendToServer as dataToReceiveFromServer in project2 */
 //        dataToReceiveFromServer = dataToSendToServer;
         if (dataToReceiveFromServer == null) {
-            if (!closeConnection) {
-                System.out.println("The reference is null, there is no data to print");
-            }
+            System.out.println("The reference is null, there is no data to print");
         } else if (dataToReceiveFromServer instanceof FileClackData) {
             System.out.println(getHostName() + " sent a file: " + ((FileClackData) dataToReceiveFromServer).getFileName());
             System.out.println("with contents: " + dataToReceiveFromServer.getData());

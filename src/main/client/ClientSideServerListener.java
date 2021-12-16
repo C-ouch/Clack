@@ -1,4 +1,4 @@
-package main;
+package main.client;
 
 public class ClientSideServerListener implements Runnable {
 
@@ -20,12 +20,7 @@ public class ClientSideServerListener implements Runnable {
      */
     @Override
     public void run() {
-
-        while(!client.getCloseConnection()){
-            client.receiveData();
-            client.printData();
-        }
-
+        client.receiveData();
+        client.printData();
     }
-
 }

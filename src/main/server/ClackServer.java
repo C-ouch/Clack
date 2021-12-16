@@ -1,4 +1,4 @@
-package main;
+package main.server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -55,7 +55,6 @@ public class ClackServer {
         }
         this.port = port;
 
-        closeConnection = false;
         serverSideClientIOList = new ArrayList<>();
 
     }
@@ -90,6 +89,10 @@ public class ClackServer {
 
             }
 
+            for(ServerSideClientIO serverSideClientIO : serverSideClientIOList) {
+                // serverSideClientIO.close();
+            }
+
             //inFromClient.close();
             //outToClient.close();
             sskt.close();
@@ -102,9 +105,9 @@ public class ClackServer {
     }
 
     public synchronized void broadcast(ClackData dataToBroadcastToClients) {
-        for (ServerSideClientIO s : serverSideClientIOList) {
-            s.setDataToSendToClient(dataToBroadcastToClients);
-            s.sendData();
+        for (ServerSideClientIO serverSideClientIO : serverSideClientIOList) {
+            serverSideClientIO.setDataToSendToClient(dataToBroadcastToClients);
+            serverSideClientIO.sendData();
         }
     }
 
@@ -126,7 +129,7 @@ public class ClackServer {
             serverSideClientToRemove.clientSocket.close();
         }
         catch (IOException ioe) {
-            System.err.println("An unexpected IO Exception has occurred with the socket");
+            System.err.println("An unexpected IO Exception has occured with the socket");
         }
 
     }

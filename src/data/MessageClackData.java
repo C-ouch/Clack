@@ -87,11 +87,8 @@ public class MessageClackData extends ClackData {
     variables, including those in super class
      */
     @Override
-    public String toString()
-    {
-
-        return "";
+    public String toString() {
+        return String.format("<%s file_name=\"%s\">", getClass().getSimpleName(), message.substring(0, Math.min(message.length(), 8)));
     }
-
 
 }

@@ -45,8 +45,6 @@ public abstract class ClackData implements Serializable {
      */
     public ClackData(int type) {
         this("Anon", type);
-
-
     }
 
     /**
@@ -94,17 +92,13 @@ public abstract class ClackData implements Serializable {
      */
     public abstract String getData(String key);
 
-
     /**
      * Takes String and encrypt's it with Vigenere cipher with the key
      * @param inputStringToEncrypt the string of letters to be encrypted
      * @param key word that is used to encrypt/decrypt string
      * @return  encrypted string
      */
-
     public static String encrypt(String inputStringToEncrypt, String key) {
-
-
         //Character Array
         char[] inStr = inputStringToEncrypt.toCharArray();
         int inStrLen = inStr.length;
@@ -112,7 +106,6 @@ public abstract class ClackData implements Serializable {
 
         // Creating new char arrays
         char[] encrypted = new char[inStrLen];
-
 
         for (i = 0, j = 0; i < inStrLen; ++i, ++j) {
             if (Character.isAlphabetic(inStr[i])) {
@@ -133,8 +126,8 @@ public abstract class ClackData implements Serializable {
                 encrypted[i] = inStr[i];
             }
         }
-
         return String.valueOf(encrypted);
+
     }
 
     /**
@@ -172,12 +165,8 @@ public abstract class ClackData implements Serializable {
                 decrypted[i] = inStr[i];
             }
         }
-
-
         return String.valueOf(decrypted);
 
     }
 
-
 }
-

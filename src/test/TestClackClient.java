@@ -1,6 +1,6 @@
 package test;
 
-import main.ClackClient;
+import main.client.ClackClient;
 
 /**
  * the class TestClackClient is used to test ClackClient 
